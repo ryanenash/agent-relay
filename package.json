@@ -2,7 +2,16 @@
   "name": "agent-relay",
   "private": true,
   "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --local --port 8799",
+    "typecheck": "tsc --noEmit"
+  },
   "dependencies": {
     "@cloudflare/workers-oauth-provider": "1.2.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "4.20260702.1",
+    "typescript": "5.6.3",
+    "wrangler": "4.102.0"
   }
 }

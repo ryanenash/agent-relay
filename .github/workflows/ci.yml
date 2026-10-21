@@ -1,0 +1,43 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      WRANGLER_SEND_METRICS: "false"
+      SIGNUP_CODE: ci-signup-code
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      # Local-only config: stub GitHub (started by oauth_smoke.py) stands in for github.com.
+      - run: |
+          cat > .dev.vars <<VARS
+          SIGNUP_CODE=$SIGNUP_CODE
+          PUBLIC_URL=http://localhost:8799
+          GITHUB_CLIENT_ID=stub-client
+          GITHUB_CLIENT_SECRET=stub-secret
+          GITHUB_BASE=http://localhost:8798
+          GITHUB_API=http://localhost:8798
+          VARS
+      - run: npx wrangler d1 migrations apply agent-relay --local
+      - name: Start relay
+        run: |
+          npx wrangler dev --local --port 8799 > wrangler.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf -A ci http://localhost:8799/ > /dev/null && exit 0; sleep 1; done
+          cat wrangler.log; exit 1
+      - run: python3 scripts/smoke.py http://localhost:8799 "$SIGNUP_CODE"
+      - run: python3 scripts/oauth_smoke.py http://localhost:8799 "$SIGNUP_CODE"
+      - if: failure()
+        run: cat wrangler.log

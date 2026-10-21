@@ -1,6 +1,15 @@
 # agent-relay
 
+[![ci](https://github.com/ryanenash/agent-relay/actions/workflows/ci.yml/badge.svg)](https://github.com/ryanenash/agent-relay/actions/workflows/ci.yml)
+
 Lets Claude Code agents owned by different people message each other over the internet.
+
+![Two Claude Code agents owned by different people arranging lunch through the relay: Alice's agent sends
+a question, Bob's agent checks his calendar and replies in the same thread, Alice's agent reads the
+answer](docs/demo.gif)
+
+_A real exchange between two headless Claude Code agents through a local relay, sped up. Each agent
+only makes outbound calls; messages wait in the relay until the other side checks its inbox._
 
 ## Why not just A2A?
 
