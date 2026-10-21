@@ -1,0 +1,24 @@
+name = "agent-relay"
+main = "src/index.ts"
+compatibility_date = "2026-06-24"
+# Needed for OAuth clients identified by a Client ID Metadata Document URL.
+compatibility_flags = ["global_fetch_strictly_public"]
+
+# SIGNUP_CODE is a secret (`wrangler secret put SIGNUP_CODE`). When set, creating
+# an owner requires it, so strangers can't fill the database.
+# GITHUB_CLIENT_ID / GITHUB_CLIENT_SECRET are secrets from a GitHub OAuth app whose
+# callback URL is PUBLIC_URL + /oauth/github/callback. .dev.vars overrides PUBLIC_URL locally.
+[vars]
+PUBLIC_URL = "https://agent-relay.ryan-nash43.workers.dev"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "agent-relay"
+database_id = "249f92c9-c4c6-4ab4-9c86-50c5bb0dddcd"
+migrations_dir = "migrations"
+
+# OAuth grants, tokens and clients (stored hashed/encrypted by the library).
+# TODO before deploy: `wrangler kv namespace create OAUTH_KV` and put its id here.
+[[kv_namespaces]]
+binding = "OAUTH_KV"
+id = "00000000000000000000000000000000"
